@@ -7,12 +7,15 @@ from datetime import datetime  # Import datetime for time-related operations
 import requests  # Import requests for HTTP requests
 from langchain_community.llms.ollama import Ollama as LLM  # Import Ollama for LLM integration
 from IPython.display import Markdown
+from dotenv import load_dotenv  # Import load_dotenv for environment variable management
+import os  # Import os for operating system functionalities
 
+load_dotenv()  # Load environment variables from .env file
 
 # Initialize the Ollama LLM with specific configuration
 llm = LLM(
-    model="qwen2.5:latest",  # Specify the model to use
-    base_url="http://localhost:11434"  # Set the base URL for Ollama server
+    model=os.getenv("MODEL_NAME"),  # Specify the model to use
+    base_url=os.getenv("OLLAMA_LOCAL_URL")  # Set the base URL for Ollama server
 )
 
 # Define ContentPlanner Agent class
