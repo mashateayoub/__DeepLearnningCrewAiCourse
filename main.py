@@ -9,6 +9,10 @@ from langchain_community.llms.ollama import Ollama as LLM  # Import Ollama for L
 from IPython.display import Markdown
 from dotenv import load_dotenv  # Import load_dotenv for environment variable management
 import os  # Import os for operating system functionalities
+from crewai_tools import SerperDevTool, ScrapeWebsiteTool, WebsiteSearchTool
+
+
+
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -79,6 +83,9 @@ class ContentEditor(Agent):
 # a Task class for ContentPlanner
 class PlannerTask(Task):
     def __init__(self, topic: str, agent: Agent):
+        docs_scrape_tool = ScrapeWebsiteTool(
+            website_url="https://docs.crewai.com/how-to/Creating-a-Crew-and-kick-it-off/"
+        )
         super().__init__(
             description=(
                  "1. Prioritize the latest trends, key players, "
@@ -92,6 +99,7 @@ class PlannerTask(Task):
              expected_output="A comprehensive content plan document "
                 "with an outline, audience analysis, "
                 "SEO keywords, and resources.",
+            tools = [docs_scrape_tool],  # Add the tool to the task
              agent=agent
         )
 
@@ -137,7 +145,6 @@ class EditorTask(Task):
             agent=agent
         )
 
-
 # Define a function to create a Crew instance
 def createCrew(topic: str) -> Crew:
     # Create instances of agents
@@ -161,9 +168,9 @@ def createCrew(topic: str) -> Crew:
 # Main execution block
 if __name__ == "__main__":
     # Create an instance of ContentPlanner with a specific topic
-    topic = "Artificial Intelligence in Healthcare"
+    topic = "Building a CrewAI Agent"
     crew = createCrew(topic)
-    result = crew.kickoff(inputs={"topic": "Artificial Intelligence"})
+    result = crew.kickoff(inputs={"topic":  topic})  # Start the Crew process
     # save the result in a markdown file (.md)
     with open(f"{topic.replace(' ', '_')}.md", 'w', encoding='utf-8') as f:
         f.write(result)
